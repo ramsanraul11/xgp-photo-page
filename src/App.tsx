@@ -8,6 +8,7 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AppRouter />
+      {/* TODO: Mirar por que no traza en Vercel.com */}
       <Analytics />
     </ThemeProvider>
   );

@@ -24,10 +24,10 @@ export default function HomePage() {
                 <ImageCarousel />
             </Box>
 
-            {/* 🔹 Navbar sobre el carrusel */}
+            {/* 🔹 Navbar sobre el carrusel
             <Box sx={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 2 }}>
                 <Navbar />
-            </Box>
+            </Box> */}
 
             {/* 🔹 Contenido principal sobre el carrusel */}
             <Container
@@ -40,7 +40,7 @@ export default function HomePage() {
                     color: "#fff",
                 }}
             >
-                <Typography
+                {/* <Typography
                     variant="h2"
                     sx={{
                         fontWeight: 700,
@@ -57,7 +57,7 @@ export default function HomePage() {
                     }}
                 >
                     Bienvenido a <strong>XGP Photo Page</strong>
-                </Typography>
+                </Typography> */}
             </Container>
         </Box>
     );
