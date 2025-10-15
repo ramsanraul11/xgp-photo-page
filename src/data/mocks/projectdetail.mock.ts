@@ -6,6 +6,7 @@ export interface Photo {
 export interface ProjectDetail {
   id: number;
   title: string;
+  description: string;
   url: string;
   photos: Photo[];
 }
@@ -15,6 +16,8 @@ export const PROJECT_DETAIL_MOCK: ProjectDetail[] = [
     id: 1,
     title: "Paisaje montañoso",
     url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+    description:
+      "Un paisaje montañoso capturado al amanecer. Tonos fríos, bruma ligera y una composición ideal para mostrar escenarios naturales y profundidad.",
     photos: [
       {
         id: 101,
@@ -34,6 +37,8 @@ export const PROJECT_DETAIL_MOCK: ProjectDetail[] = [
     id: 2,
     title: "Ciudad nocturna",
     url: "https://images.unsplash.com/photo-1499346030926-9a72daac6c63",
+    description:
+      "Luces urbanas, reflejos en el asfalto y atmósfera cinematográfica. Ideal para mostrar fotografía de arquitectura y vida nocturna.",
     photos: [
       {
         id: 201,
@@ -47,7 +52,7 @@ export const PROJECT_DETAIL_MOCK: ProjectDetail[] = [
         id: 203,
         url: "https://images.unsplash.com/photo-1508057198894-247b23fe5ade",
       },
-            {
+      {
         id: 501,
         url: "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3",
       },
@@ -65,6 +70,8 @@ export const PROJECT_DETAIL_MOCK: ProjectDetail[] = [
     id: 3,
     title: "Bosque nevado",
     url: "https://images.unsplash.com/photo-1482192596544-9eb780fc7f66",
+    description:
+      "Un bosque cubierto de nieve bajo una luz difusa. Representa calma, simetría natural y contraste entre blanco y sombras suaves.",
     photos: [
       {
         id: 301,
@@ -84,6 +91,8 @@ export const PROJECT_DETAIL_MOCK: ProjectDetail[] = [
     id: 4,
     title: "Playa tropical",
     url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+    description:
+      "Colores cálidos, agua cristalina y arena fina. Perfecta para trabajos relacionados con turismo, viajes o entornos paradisíacos.",
     photos: [
       {
         id: 401,
@@ -103,6 +112,8 @@ export const PROJECT_DETAIL_MOCK: ProjectDetail[] = [
     id: 5,
     title: "Cielo estrellado",
     url: "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3",
+    description:
+      "Una noche despejada con miles de estrellas visibles. Ideal para destacar fotografía de larga exposición y escenas astronómicas.",
     photos: [
       {
         id: 501,
@@ -116,7 +127,7 @@ export const PROJECT_DETAIL_MOCK: ProjectDetail[] = [
         id: 503,
         url: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564",
       },
-            {
+      {
         id: 101,
         url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
       },

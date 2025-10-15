@@ -110,8 +110,7 @@ export default function ProjectDetailPage() {
           textAlign: "center",
         }}
       >
-        Este es un ejemplo de descripción del proyecto "{project.title}". Aquí podrías
-        agregar información técnica, tecnologías usadas o detalles del cliente.
+        {project.description}
       </Typography>
 
       {/* Galería */}
