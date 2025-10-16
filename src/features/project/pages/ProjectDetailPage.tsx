@@ -5,20 +5,19 @@ import { Box, IconButton, Modal, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
-import { PROJECT_DETAIL_MOCK } from "../../../data/mocks/projectdetail.mock";
 import LoadingOverlay from "../../../shared/components/LoadingOverlay";
 import { useImagePreloader } from "../../../shared/hooks/useImagePreloader";
+import { useProjectDetail } from "../../../shared/hooks/useProjectDetail";
 
 export default function ProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
-  const project = PROJECT_DETAIL_MOCK.find((p) => p.id === Number(projectId));
+  const { project, isLoading, error } = useProjectDetail(projectId);
 
-  // ✅ Obtener todas las URLs (principal + fotos)
+  // Hooks deben ir ANTES de cualquier return
   const allImages = project
-    ? [project.url, ...project.photos.map((p) => p.url)]
+    ? [project.imageUrl, ...project.details.map((d) => d.imageUrl)]
     : [];
 
-  // ✅ Hook de pre-carga
   const imagesLoaded = useImagePreloader(allImages);
 
   const [open, setOpen] = useState(false);
@@ -33,17 +32,20 @@ export default function ProjectDetailPage() {
 
   const handleNext = useCallback(() => {
     if (!project) return;
-    setCurrentIndex((prev) => (prev + 1) % project.photos.length);
+    setCurrentIndex((prev) => (prev + 1) % project.details.length);
   }, [project]);
 
   const handlePrev = useCallback(() => {
     if (!project) return;
     setCurrentIndex((prev) =>
-      prev === 0 ? project.photos.length - 1 : prev - 1
+      prev === 0 ? project.details.length - 1 : prev - 1
     );
   }, [project]);
 
-  if (!project) {
+  // 🔹 Después de todos los hooks, ya puedes usar returns condicionales
+  if (isLoading) return <LoadingOverlay visible={true} />;
+
+  if (error || !project) {
     return (
       <Box
         sx={{
@@ -55,17 +57,14 @@ export default function ProjectDetailPage() {
           color: "white",
         }}
       >
-        <Typography variant="h4">Proyecto no encontrado</Typography>
+        <Typography variant="h4">{error ?? "Proyecto no encontrado"}</Typography>
       </Box>
     );
   }
 
-  // ✅ Mostrar loader si aún no están cargadas las imágenes
-  if (!imagesLoaded) {
-    return <LoadingOverlay visible={true} />;
-  }
+  if (!imagesLoaded) return <LoadingOverlay visible={true} />;
 
-  // ✅ Renderizar la página normalmente cuando ya están cargadas
+  // ✅ Render principal
   return (
     <Box
       sx={{
@@ -82,7 +81,7 @@ export default function ProjectDetailPage() {
       {/* Imagen principal */}
       <Box
         component="img"
-        src={project.url}
+        src={project.imageUrl}
         alt={project.title}
         sx={{
           width: "80%",
@@ -127,7 +126,7 @@ export default function ProjectDetailPage() {
           maxWidth: "80%",
         }}
       >
-        {project.photos.map((photo, index) => (
+        {project.details.map((photo, index) => (
           <Box
             key={photo.id}
             onClick={() => handleOpen(index)}
@@ -159,12 +158,12 @@ export default function ProjectDetailPage() {
               },
             }}
           >
-            <Box component="img" src={photo.url} alt={`Foto ${photo.id}`} />
+            <Box component="img" src={photo.imageUrl} alt={`Foto ${photo.id}`} />
           </Box>
         ))}
       </Grid>
 
-      {/* Modal de visualización */}
+      {/* Modal */}
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
@@ -179,31 +178,22 @@ export default function ProjectDetailPage() {
         >
           <IconButton
             onClick={handleClose}
-            sx={{
-              position: "absolute",
-              top: 16,
-              right: 16,
-              color: "white",
-            }}
+            sx={{ position: "absolute", top: 16, right: 16, color: "white" }}
           >
             <CloseIcon fontSize="large" />
           </IconButton>
 
           <IconButton
             onClick={handlePrev}
-            sx={{
-              position: "absolute",
-              left: 16,
-              color: "white",
-            }}
+            sx={{ position: "absolute", left: 16, color: "white" }}
           >
             <ArrowBackIosNewIcon fontSize="large" />
           </IconButton>
 
           <Box
             component="img"
-            src={project.photos[currentIndex].url}
-            alt={`Foto ampliada ${project.photos[currentIndex].id}`}
+            src={project.details[currentIndex].imageUrl}
+            alt={`Foto ampliada ${project.details[currentIndex].id}`}
             sx={{
               maxWidth: "90%",
               maxHeight: "80vh",
@@ -211,19 +201,14 @@ export default function ProjectDetailPage() {
               boxShadow: "0 0 30px rgba(0,0,0,0.6)",
               objectFit: "contain",
               opacity: imagesLoaded ? 1 : 0,
-              transition: "opacity 0.6s ease-out",
+              transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
               transform: imagesLoaded ? "translateY(0)" : "translateY(10px)",
-              transitionProperty: "opacity, transform",
             }}
           />
 
           <IconButton
             onClick={handleNext}
-            sx={{
-              position: "absolute",
-              right: 16,
-              color: "white",
-            }}
+            sx={{ position: "absolute", right: 16, color: "white" }}
           >
             <ArrowForwardIosIcon fontSize="large" />
           </IconButton>

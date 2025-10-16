@@ -6,31 +6,50 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Autoplay, EffectFade } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-
-const items = [
-  {
-    name: "Proyecto 1 clica",
-    image: "/images/migrar-a-storage/_DSF0626.jpg",
-    projectId: 1,
-  },
-  {
-    name: "Proyecto 2 clica",
-    image: "/images/migrar-a-storage/_DSF2392.jpg",
-    projectId: 2,
-  },
-  {
-    name: "Proyecto 3 clica",
-    image: "/images/migrar-a-storage/_DSF2923.jpg",
-    projectId: 3,
-  },
-  {
-    name: "Proyecto 4 clica",
-    image: "/images/migrar-a-storage/_DSF8745.jpg",
-    projectId: 4,
-  },
-];
+import LoadingOverlay from "../../../shared/components/LoadingOverlay";
+import { useProjects } from "../../../shared/hooks/useProjects";
 
 export default function ImageCarousel() {
+
+  const { projects, isLoading, error } = useProjects();
+
+  if (isLoading) {
+    return (
+      // <Box
+      //   sx={{
+      //     width: "100%",
+      //     height: "100vh",
+      //     display: "flex",
+      //     alignItems: "center",
+      //     justifyContent: "center",
+      //     bgcolor: "black",
+      //   }}
+      // >
+      // <CircularProgress size={60} sx={{ color: "white" }} />
+      <LoadingOverlay visible={true} />
+      // </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          bgcolor: "black",
+          color: "white",
+          fontSize: "1.2rem",
+        }}
+      >
+        {error}
+      </Box>
+    );
+  }
+
   return (
     <Swiper
       modules={[Autoplay, EffectFade]}
@@ -40,22 +59,22 @@ export default function ImageCarousel() {
       loop
       style={{ width: "100%", height: "100vh" }}
     >
-      {items.map((item) => (
-        <SwiperSlide key={item.name}>
+      {projects.map((project) => (
+        <SwiperSlide key={project.id}>
           <Box
             component={RouterLink}
-            to={`/projects/${item.projectId}`}
+            to={`/projects/${project.id}`}
             sx={{
               position: "relative",
               width: "100%",
               height: "100vh",
-              backgroundImage: `url(${item.image})`,
+              backgroundImage: `url(${project.imageUrl})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              textDecoration: "none", // elimina subrayado del link
+              textDecoration: "none",
               "&::after": {
                 content: '""',
                 position: "absolute",
@@ -85,7 +104,7 @@ export default function ImageCarousel() {
                 },
               }}
             >
-              {item.name}
+              {project.title}
             </Typography>
           </Box>
         </SwiperSlide>
