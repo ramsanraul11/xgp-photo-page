@@ -4,6 +4,8 @@ import {
   Button,
   CircularProgress,
   Container,
+  IconButton,
+  InputAdornment,
   Paper,
   TextField,
   Typography,
@@ -12,13 +14,18 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginApiAsync } from "../../../auth/services/auth.service";
 import { useAuth } from "../../../auth/useAuth";
+import { VisibilityOff, Visibility } from "@mui/icons-material";
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -64,10 +71,23 @@ export default function LoginPage() {
             fullWidth
             label="Contraseña"
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={form.password}
             onChange={handleChange}
             margin="normal"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleTogglePassword}
+                    edge="end"
+                    aria-label="mostrar contraseña"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <Button
             fullWidth
