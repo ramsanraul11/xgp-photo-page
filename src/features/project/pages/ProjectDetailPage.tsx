@@ -1,6 +1,7 @@
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CloseIcon from "@mui/icons-material/Close";
+import ImageNotSupportedOutlinedIcon from "@mui/icons-material/ImageNotSupportedOutlined";
 import { Box, IconButton, Modal, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useCallback, useState } from "react";
@@ -13,13 +14,11 @@ export default function ProjectDetailPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const { project, isLoading, error } = useProjectDetail(projectId);
 
-  // Hooks deben ir ANTES de cualquier return
   const allImages = project
-    ? [project.imageUrl, ...project.details.map((d) => d.imageUrl)]
+    ? [project.imageUrl, ...(project.details?.map((d) => d.imageUrl) ?? [])]
     : [];
 
   const imagesLoaded = useImagePreloader(allImages);
-
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -42,7 +41,6 @@ export default function ProjectDetailPage() {
     );
   }, [project]);
 
-  // 🔹 Después de todos los hooks, ya puedes usar returns condicionales
   if (isLoading) return <LoadingOverlay visible={true} />;
 
   if (error || !project) {
@@ -63,6 +61,8 @@ export default function ProjectDetailPage() {
   }
 
   if (!imagesLoaded) return <LoadingOverlay visible={true} />;
+
+  const hasImages = project.details && project.details.length > 0;
 
   // ✅ Render principal
   return (
@@ -112,108 +112,135 @@ export default function ProjectDetailPage() {
         {project.description}
       </Typography>
 
-      {/* Galería */}
-      <Grid
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-          },
-          gap: 2,
-          justifyContent: "center",
-          maxWidth: "80%",
-        }}
-      >
-        {project.details.map((photo, index) => (
-          <Box
-            key={photo.id}
-            onClick={() => handleOpen(index)}
-            sx={{
-              position: "relative",
-              width: "100%",
-              height: 200,
-              borderRadius: 2,
-              overflow: "hidden",
-              cursor: "pointer",
-              "& img": {
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                transition: "transform 0.3s ease",
-              },
-              "&::after": {
-                content: '""',
-                position: "absolute",
-                inset: 0,
-                backgroundColor: "rgba(0,0,0,0)",
-                transition: "background-color 0.3s ease",
-              },
-              "&:hover img": {
-                transform: "scale(1.05)",
-              },
-              "&:hover::after": {
-                backgroundColor: "rgba(0,0,0,0.35)",
-              },
-            }}
-          >
-            <Box component="img" src={photo.imageUrl} alt={`Foto ${photo.id}`} />
-          </Box>
-        ))}
-      </Grid>
-
-      {/* Modal */}
-      <Modal open={open} onClose={handleClose}>
+      {/* 🔹 Si NO hay imágenes */}
+      {!hasImages ? (
         <Box
           sx={{
-            position: "fixed",
-            inset: 0,
-            bgcolor: "rgba(0,0,0,0.9)",
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 2000,
+            mt: 6,
+            mb: 10,
+            color: "gray.400",
           }}
         >
-          <IconButton
-            onClick={handleClose}
-            sx={{ position: "absolute", top: 16, right: 16, color: "white" }}
-          >
-            <CloseIcon fontSize="large" />
-          </IconButton>
-
-          <IconButton
-            onClick={handlePrev}
-            sx={{ position: "absolute", left: 16, color: "white" }}
-          >
-            <ArrowBackIosNewIcon fontSize="large" />
-          </IconButton>
-
-          <Box
-            component="img"
-            src={project.details[currentIndex].imageUrl}
-            alt={`Foto ampliada ${project.details[currentIndex].id}`}
-            sx={{
-              maxWidth: "90%",
-              maxHeight: "80vh",
-              borderRadius: 2,
-              boxShadow: "0 0 30px rgba(0,0,0,0.6)",
-              objectFit: "contain",
-              opacity: imagesLoaded ? 1 : 0,
-              transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
-              transform: imagesLoaded ? "translateY(0)" : "translateY(10px)",
-            }}
+          <ImageNotSupportedOutlinedIcon
+            sx={{ fontSize: 80, mb: 2, color: "rgba(255,255,255,0.3)" }}
           />
-
-          <IconButton
-            onClick={handleNext}
-            sx={{ position: "absolute", right: 16, color: "white" }}
-          >
-            <ArrowForwardIosIcon fontSize="large" />
-          </IconButton>
+          <Typography variant="h5" fontWeight="500" sx={{ mb: 1 }}>
+            No hay imágenes disponibles
+          </Typography>
+          <Typography variant="body1" sx={{ opacity: 0.7 }}>
+            Este proyecto aún no tiene fotografías cargadas.
+          </Typography>
         </Box>
-      </Modal>
+      ) : (
+        <>
+          {/* Galería */}
+          <Grid
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "repeat(2, 1fr)",
+                md: "repeat(3, 1fr)",
+              },
+              gap: 2,
+              justifyContent: "center",
+              maxWidth: "80%",
+            }}
+          >
+            {project.details.map((photo, index) => (
+              <Box
+                key={photo?.id}
+                onClick={() => handleOpen(index)}
+                sx={{
+                  position: "relative",
+                  width: "100%",
+                  height: 200,
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  "& img": {
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transition: "transform 0.3s ease",
+                  },
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    inset: 0,
+                    backgroundColor: "rgba(0,0,0,0)",
+                    transition: "background-color 0.3s ease",
+                  },
+                  "&:hover img": {
+                    transform: "scale(1.05)",
+                  },
+                  "&:hover::after": {
+                    backgroundColor: "rgba(0,0,0,0.35)",
+                  },
+                }}
+              >
+                <Box component="img" src={photo.imageUrl} alt={`Foto ${photo?.id}`} />
+              </Box>
+            ))}
+          </Grid>
+
+          {/* Modal */}
+          <Modal open={open} onClose={handleClose}>
+            <Box
+              sx={{
+                position: "fixed",
+                inset: 0,
+                bgcolor: "rgba(0,0,0,0.9)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 2000,
+              }}
+            >
+              <IconButton
+                onClick={handleClose}
+                sx={{ position: "absolute", top: 16, right: 16, color: "white" }}
+              >
+                <CloseIcon fontSize="large" />
+              </IconButton>
+
+              <IconButton
+                onClick={handlePrev}
+                sx={{ position: "absolute", left: 16, color: "white" }}
+              >
+                <ArrowBackIosNewIcon fontSize="large" />
+              </IconButton>
+
+              <Box
+                component="img"
+                src={project.details[currentIndex]?.imageUrl}
+                alt={`Foto ampliada ${project.details[currentIndex]?.id}`}
+                sx={{
+                  maxWidth: "90%",
+                  maxHeight: "80vh",
+                  borderRadius: 2,
+                  boxShadow: "0 0 30px rgba(0,0,0,0.6)",
+                  objectFit: "contain",
+                  opacity: imagesLoaded ? 1 : 0,
+                  transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+                  transform: imagesLoaded ? "translateY(0)" : "translateY(10px)",
+                }}
+              />
+
+              <IconButton
+                onClick={handleNext}
+                sx={{ position: "absolute", right: 16, color: "white" }}
+              >
+                <ArrowForwardIosIcon fontSize="large" />
+              </IconButton>
+            </Box>
+          </Modal>
+        </>
+      )}
     </Box>
   );
 }

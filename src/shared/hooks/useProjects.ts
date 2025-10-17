@@ -9,8 +9,6 @@ interface UseProjectsResult {
   refetch: () => Promise<void>;
 }
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export function useProjects(): UseProjectsResult {
   const [projects, setProjects] = useState<ProjectDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,9 +19,6 @@ export function useProjects(): UseProjectsResult {
       setIsLoading(true);
 
       const data = await getProjects();
-
-      // ⏳ Simula latencia o mantiene el spinner visible 1.5s
-      await delay(1500);
 
       setProjects(data);
     } catch (err) {

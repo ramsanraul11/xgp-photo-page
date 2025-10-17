@@ -1,20 +1,23 @@
 // src/features/admin/pages/LoginPage.tsx
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginApiAsync } from "../../../auth/services/auth.service";
 import { useAuth } from "../../../auth/useAuth";
-import {
-  Container,
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Paper,
-} from "@mui/material";
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ user: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,13 +25,24 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    if (form.user === "admin" && form.password === "1234") {
-      login("fake-jwt-token");
-      navigate("/admin/projects");
-    } else {
+    const token = await loginApiAsync({
+      email: form.email,
+      password: form.password,
+      clientId: "xgp-web",
+      clientSecret: "Y0urCl13ntS3cret!2025",
+    });
+
+    if (!token) {
+      setIsLoading(false);
       alert("Credenciales incorrectas");
+      return;
     }
+
+    login(token);
+    navigate("/admin/projects");
+    setIsLoading(false);
   };
 
   return (
@@ -41,8 +55,8 @@ export default function LoginPage() {
           <TextField
             fullWidth
             label="Usuario"
-            name="user"
-            value={form.user}
+            name="email"
+            value={form.email}
             onChange={handleChange}
             margin="normal"
           />
@@ -62,7 +76,11 @@ export default function LoginPage() {
             type="submit"
             sx={{ mt: 2 }}
           >
-            Entrar
+            {isLoading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Entrar"
+            )}
           </Button>
         </Box>
       </Paper>

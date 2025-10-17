@@ -53,11 +53,13 @@ export default function AppRouter() {
         {/* Rutas protegidas */}
         <Route element={<RequireAuth />}>
           <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="projects" replace />} />
+
             <Route path="projects" element={<ProjectListPage />} />
             <Route path="projects/new" element={<ProjectFormPage />} />
             <Route path="projects/:projectId/edit" element={<ProjectFormPage />} />
             <Route path="projects/:projectId/photos" element={<ProjectPhotosPage />} />
-            
+
             <Route path="*" element={<Navigate to="/admin/projects" replace />} />
           </Route>
         </Route>

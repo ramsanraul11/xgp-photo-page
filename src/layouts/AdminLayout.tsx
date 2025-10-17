@@ -13,6 +13,9 @@ export default function AdminLayout() {
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         Panel de Administración
                     </Typography>
+                    <Button color="inherit" component={RouterLink} to="/">
+                        Ir al portal
+                    </Button>
                     <Button color="inherit" component={RouterLink} to="/admin/projects">
                         Proyectos
                     </Button>
