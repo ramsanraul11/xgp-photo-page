@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { getProjects } from "../../features/home/repositories/project.repository";
+import {
+  getProjectById
+} from "../../features/home/repositories/project.repository";
 import type { ProjectDto } from "../types/project.types";
 
 export const useProjectDetail = (projectId?: string) => {
@@ -12,15 +14,12 @@ export const useProjectDetail = (projectId?: string) => {
 
     try {
       setIsLoading(true);
-      const data = await getProjects();
+      const projectDetail = await getProjectById(projectId);
 
-      // 👇 Filtrar el proyecto en cliente
-      const found = data.find((p) => p.id === projectId);
-
-      if (!found) {
+      if (!projectDetail) {
         setError("Proyecto no encontrado");
       } else {
-        setProject(found);
+        setProject(projectDetail);
       }
     } catch (err) {
       console.error("❌ Error al cargar el proyecto:", err);
